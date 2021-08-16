@@ -41,6 +41,18 @@ public class JwtAuthenticationController {
 
             return ResponseEntity.ok(new JwtResponse(token));
         }
+        
+        @RequestMapping(value = "/signup", method = RequestMethod.POST)
+        public ResponseEntity<?> generateAtuenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
+            final UserDetails userDetails = userDetailsService.saveUser(
+                authenticationRequest.getUsername(), 
+                authenticationRequest.getPassword(), 
+                authenticationRequest.getNickname());
+            final String token = jwtTokenUtil.generateToken(userDetails);
+
+            return ResponseEntity.ok(new JwtResponse(token));
+        }
+
         @RequestMapping("/hello")
         public String hello() {
             return "Hello World";

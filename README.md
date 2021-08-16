@@ -2,3 +2,4 @@
 ## APIs
 - baseUrl = 
 ### [POST]/authenticate
+### [POST] /signup

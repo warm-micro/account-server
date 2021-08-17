@@ -83,10 +83,20 @@ public class JwtAuthenticationController {
             return ResponseEntity.ok(new JwtResponse(token));
         }
         
+        @RequestMapping(value = "/exists", method = RequestMethod.GET)
+        public ResponseEntity<?> userIdIsExists(long userId) {
+            if (userRepository.existsById(userId)) {
+                return ResponseEntity.ok(new Response("True"));
+            } else {
+                return ResponseEntity.ok(new Response("False"));
+            }
+        }
+
         @RequestMapping("/hello")
         public String hello() {
             return "Hello World";
         }
+
         private void authenticate(String username, String password) throws Exception {
             try {
                 UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);

@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<UserEntity,Long> {
     Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByUsernameAndPassword(String username, String password);
+    boolean existsById(long id);
     boolean existsByUsername(String username);
 }

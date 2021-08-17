@@ -19,7 +19,7 @@ public class UserEntity {
     private String password;
     private String nickname;
     
-    protected UserEntity() {}
+    public UserEntity() {}
     
     public UserEntity(String username, String password, String nickname){
         this.username = username;

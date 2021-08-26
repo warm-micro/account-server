@@ -19,6 +19,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    // @Bean
+    // public GrpcAuthenticationReader grpcAuthenticationReader() {
+    //     return new BasicGrpcAuthenticationReader();
+    // }
+    
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
@@ -47,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
-			.authorizeRequests().antMatchers("/user/authenticate", "/user/signup").permitAll()
+			.authorizeRequests().antMatchers("/user/authenticate", "/user/signup", "/user/hello").permitAll()
             .anyRequest().authenticated()
             .and()
 			.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)

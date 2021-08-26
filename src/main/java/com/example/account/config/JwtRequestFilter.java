@@ -35,7 +35,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     Arrays.asList(
                         "/api/member",
                         "/user/authenticate",
-                        "/user/signup"
+                        "/user/signup",
+                        "/user/hello"
                     ));
                     
     @Override

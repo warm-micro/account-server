@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin
 @RequestMapping("/user")
-public class JwtAuthenticationController {
+public class JwtAuthenticationController{
         @Autowired
         private AuthenticationManager authenticationManager;
 
@@ -93,7 +93,7 @@ public class JwtAuthenticationController {
             }
         }
 
-        @RequestMapping("/hello")
+        @RequestMapping(value = "/hello", method = RequestMethod.GET)
         public String hello() {
             return "Hello World";
         }

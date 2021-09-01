@@ -61,7 +61,8 @@ public class JwtAuthenticationController{
                 return ResponseEntity.badRequest().body(new Response("wrong username"));
             } 
             if(passwordEncoder.matches(authenticationRequest.getPassword(), userEntity.get().getPassword())) {
-                final UserDetails userDetails = new User(authenticationRequest.getUsername(), userEntity.get().getPassword(), new ArrayList<>());
+                // final UserDetails userDetails = new User(authenticationRequest.getUsername(), userEntity.get().getPassword(), new ArrayList<>());
+                final UserDetails userDetails = new User(userEntity.get().getUsername(), userEntity.get().getPassword(), new ArrayList<>());
                 final String token = jwtTokenUtil.generateToken(userDetails);
                 return ResponseEntity.ok(new JwtResponse(token));
             } else {

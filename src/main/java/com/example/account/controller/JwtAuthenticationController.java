@@ -8,6 +8,7 @@ import com.example.account.model.JwtRequest;
 import com.example.account.model.JwtResponse;
 import com.example.account.model.Response;
 import com.example.account.model.UserEntity;
+import com.example.account.model.UserResponse;
 import com.example.account.repository.UserRepository;
 import com.example.account.service.JwtUserDetailsService;
 
@@ -64,7 +65,14 @@ public class JwtAuthenticationController{
                 // final UserDetails userDetails = new User(authenticationRequest.getUsername(), userEntity.get().getPassword(), new ArrayList<>());
                 final UserDetails userDetails = new User(userEntity.get().getUsername(), userEntity.get().getPassword(), new ArrayList<>());
                 final String token = jwtTokenUtil.generateToken(userDetails);
-                return ResponseEntity.ok(new JwtResponse(token));
+                UserResponse userResponse = new UserResponse(
+                    userEntity.get().getId(),
+                    userEntity.get().getUsername(),
+                    userEntity.get().getNickname(),
+                    userEntity.get().getEmail(),
+                    userEntity.get().getPhoneNumber()
+                );
+                return ResponseEntity.ok(new JwtResponse(token, userResponse));
             } else {
                 return ResponseEntity.badRequest().body(new Response("wrong password"));
             }
@@ -79,10 +87,20 @@ public class JwtAuthenticationController{
             final UserDetails userDetails = userDetailsService.saveUser(
                 authenticationRequest.getUsername(), 
                 encodedPassword, 
-                authenticationRequest.getNickname());
+                authenticationRequest.getNickname(),
+                authenticationRequest.getEmail(),
+                authenticationRequest.getPhoneNumber());
             final String token = jwtTokenUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new JwtResponse(token));
+            Optional<UserEntity> userEntity = userRepository.findByUsername(authenticationRequest.getUsername());
+            UserEntity user = userEntity.get();
+            UserResponse userResponse = new UserResponse(
+                user.getId(), 
+                user.getUsername(), 
+                user.getNickname(),
+                user.getEmail(),
+                user.getPhoneNumber());
+            return ResponseEntity.ok(new JwtResponse(token, userResponse));
         }
         
         @RequestMapping(value = "/exists", method = RequestMethod.GET)

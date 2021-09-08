@@ -41,8 +41,8 @@ public class JwtUserDetailsService implements UserDetailsService{
         }
     }
 
-    public UserDetails saveUser(String username, String password, String nickname) throws Exception {
-        userRepository.save(new UserEntity(username,password,nickname));
+    public UserDetails saveUser(String username, String password, String nickname, String email, String phoneNumber) throws Exception {
+        userRepository.save(new UserEntity(username,password,nickname, email, phoneNumber));
         return new User(username, password, new ArrayList<>());
     }
 }

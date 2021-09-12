@@ -21,14 +21,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/user")
 public class JwtAuthenticationController{
         @Autowired
@@ -112,7 +110,16 @@ public class JwtAuthenticationController{
             }
         }
 
-        @RequestMapping(value = "/hello", method = RequestMethod.GET)
+        @RequestMapping(value = "/id", method = RequestMethod.GET)
+        public ResponseEntity<?> userIdFromUsername(String username) {
+            Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+            if (!userEntity.isPresent()){
+                return ResponseEntity.badRequest().body(new Response("wrong username"));
+            }
+            return ResponseEntity.ok().body(new Response(String.valueOf(userEntity.get().getId())));
+        }
+
+        @RequestMapping(value = "/hello", method = RequestMethod.POST)
         public String hello() {
             return "Hello World";
         }

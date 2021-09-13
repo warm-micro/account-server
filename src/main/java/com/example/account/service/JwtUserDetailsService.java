@@ -24,8 +24,9 @@ public class JwtUserDetailsService implements UserDetailsService{
 
     @Override    
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if("zzzinho".equals(username)) {
-            return new User("zzzinho","$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6", new ArrayList<>());
+        Optional<UserEntity> uOptional = userRepository.findByUsername(username);
+        if (uOptional.isPresent()) {
+            return new User(uOptional.get().getUsername(), uOptional.get().getPassword(), new ArrayList<>());        
         } else {
             throw new UsernameNotFoundException(username);
         }

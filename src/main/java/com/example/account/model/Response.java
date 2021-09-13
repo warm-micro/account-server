@@ -10,4 +10,5 @@ import lombok.Getter;
 public class Response implements Serializable {
     private static final long serialVersionUID = 39029340830275L;
     private final String message;
+    private final Object body;
 }

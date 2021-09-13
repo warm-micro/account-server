@@ -13,6 +13,7 @@ import com.example.account.repository.UserRepository;
 import com.example.account.service.JwtUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,7 +59,7 @@ public class JwtAuthenticationController{
 
             Optional<UserEntity> userEntity = userRepository.findByUsername(authenticationRequest.getUsername());
             if (userEntity.isEmpty()){
-                return ResponseEntity.badRequest().body(new Response("wrong username"));
+                return ResponseEntity.badRequest().body(new Response("wrong username", null));
             } 
             if(passwordEncoder.matches(authenticationRequest.getPassword(), userEntity.get().getPassword())) {
                 // final UserDetails userDetails = new User(authenticationRequest.getUsername(), userEntity.get().getPassword(), new ArrayList<>());
@@ -72,14 +74,14 @@ public class JwtAuthenticationController{
                 );
                 return ResponseEntity.ok(new JwtResponse(token, userResponse));
             } else {
-                return ResponseEntity.badRequest().body(new Response("wrong password"));
+                return ResponseEntity.badRequest().body(new Response("wrong password", null));
             }
         }
         
         @RequestMapping(value = "/signup", method = RequestMethod.POST)
         public ResponseEntity<?> generateAtuenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
             if(userRepository.existsByUsername(authenticationRequest.getUsername())) {
-                return ResponseEntity.badRequest().body(new Response("user is exists"));
+                return ResponseEntity.badRequest().body(new Response("user is exists", null));
             }
             final String encodedPassword = passwordEncoder.encode(authenticationRequest.getPassword());
             final UserDetails userDetails = userDetailsService.saveUser(
@@ -104,9 +106,9 @@ public class JwtAuthenticationController{
         @RequestMapping(value = "/exists", method = RequestMethod.GET)
         public ResponseEntity<?> userIdIsExists(long userId) {
             if (userRepository.existsById(userId)) {
-                return ResponseEntity.ok(new Response("True"));
+                return ResponseEntity.ok(new Response("True", null));
             } else {
-                return ResponseEntity.ok(new Response("False"));
+                return ResponseEntity.ok(new Response("False", null));
             }
         }
 
@@ -114,14 +116,30 @@ public class JwtAuthenticationController{
         public ResponseEntity<?> userIdFromUsername(String username) {
             Optional<UserEntity> userEntity = userRepository.findByUsername(username);
             if (!userEntity.isPresent()){
-                return ResponseEntity.badRequest().body(new Response("wrong username"));
+                return ResponseEntity.badRequest().body(new Response("wrong username", null));
             }
-            return ResponseEntity.ok().body(new Response(String.valueOf(userEntity.get().getId())));
+            return ResponseEntity.ok().body(new Response(String.valueOf(userEntity.get().getId()), null));
         }
 
         @RequestMapping(value = "/hello", method = RequestMethod.POST)
         public String hello() {
             return "Hello World";
+        }
+
+        @RequestMapping(value = "/info", method = RequestMethod.GET)
+        public ResponseEntity<?> userInfoFromJwt(@RequestHeader HttpHeaders headers){
+            String auth = headers.getFirst("Authorization");
+            String token = auth.substring(7);
+            String username = jwtTokenUtil.getUsernameFromToken(token);
+            Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+            UserResponse userResponse = new UserResponse(
+                    userEntity.get().getId(),
+                    userEntity.get().getUsername(),
+                    userEntity.get().getNickname(),
+                    userEntity.get().getEmail(),
+                    userEntity.get().getPhoneNumber()
+                );
+            return ResponseEntity.ok().body(new Response("get user information",userResponse));
         }
 
         private void authenticate(String username, String password) throws Exception {

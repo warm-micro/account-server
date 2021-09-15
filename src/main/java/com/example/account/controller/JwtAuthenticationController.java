@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -126,12 +127,32 @@ public class JwtAuthenticationController{
             return "Hello World";
         }
 
+        @RequestMapping(value = "/info/{userId}", method = RequestMethod.GET)
+        public ResponseEntity<?> userInfoFromId(@PathVariable long userId){
+            Optional<UserEntity> userEntity = userRepository.findById(userId);
+            if (!userEntity.isPresent()){
+                return ResponseEntity.badRequest().body(new Response("wrong user id", null));
+            }
+            UserResponse userResponse = new UserResponse(
+                    userEntity.get().getId(),
+                    userEntity.get().getUsername(),
+                    userEntity.get().getNickname(),
+                    userEntity.get().getEmail(),
+                    userEntity.get().getPhoneNumber()
+                );
+            return ResponseEntity.ok().body(new Response("get user information",userResponse));
+        }
+        
         @RequestMapping(value = "/info", method = RequestMethod.GET)
         public ResponseEntity<?> userInfoFromJwt(@RequestHeader HttpHeaders headers){
             String auth = headers.getFirst("Authorization");
             String token = auth.substring(7);
             String username = jwtTokenUtil.getUsernameFromToken(token);
+            
             Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+            if (!userEntity.isPresent()){
+                return ResponseEntity.badRequest().body(new Response("wrong user", null));
+            }
             UserResponse userResponse = new UserResponse(
                     userEntity.get().getId(),
                     userEntity.get().getUsername(),

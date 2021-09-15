@@ -127,11 +127,27 @@ public class JwtAuthenticationController{
             return "Hello World";
         }
 
-        @RequestMapping(value = "/info/{userId}", method = RequestMethod.GET)
+        @RequestMapping(value = "/info/{username}", method = RequestMethod.GET)
+        public ResponseEntity<?> userInfoFromUsername(@PathVariable String username){
+            Optional<UserEntity> userEntity = userRepository.findByUsername(username);
+            if (!userEntity.isPresent()){
+                return ResponseEntity.badRequest().body(new Response("wrong username", null));
+            }
+            UserResponse userResponse = new UserResponse(
+                    userEntity.get().getId(),
+                    userEntity.get().getUsername(),
+                    userEntity.get().getNickname(),
+                    userEntity.get().getEmail(),
+                    userEntity.get().getPhoneNumber()
+                );
+            return ResponseEntity.ok().body(new Response("get user information",userResponse));
+        }
+
+        @RequestMapping(value = "/info/id/{userId}", method = RequestMethod.GET)
         public ResponseEntity<?> userInfoFromId(@PathVariable long userId){
             Optional<UserEntity> userEntity = userRepository.findById(userId);
             if (!userEntity.isPresent()){
-                return ResponseEntity.badRequest().body(new Response("wrong user id", null));
+                return ResponseEntity.ok().body(new Response("wrong username", null));
             }
             UserResponse userResponse = new UserResponse(
                     userEntity.get().getId(),

@@ -7,11 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,8 +24,6 @@ public class UserEntity {
     private String nickname;
     private String email;
     private String phoneNumber;
-    
-    public UserEntity() {}
     
     public UserEntity(String username, String password, String nickname, String email, String phoneNumber){
         this.username = username;

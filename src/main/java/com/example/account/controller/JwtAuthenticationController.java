@@ -12,6 +12,8 @@ import com.example.account.model.UserResponse;
 import com.example.account.repository.UserRepository;
 import com.example.account.service.JwtUserDetailsService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user")
 public class JwtAuthenticationController{
+        private Logger logger = LoggerFactory.getLogger(this.getClass());
+
         @Autowired
         private AuthenticationManager authenticationManager;
 
@@ -145,6 +149,16 @@ public class JwtAuthenticationController{
 
         @RequestMapping(value = "/info/id/{userId}", method = RequestMethod.GET)
         public ResponseEntity<?> userInfoFromId(@PathVariable long userId){
+            // 10% 확률로 3초 딜레이
+            Integer bug = (int)(Math.random() * 100);
+            logger.info(bug.toString());
+            if(bug % 10 == 0){
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }    
+            }
             Optional<UserEntity> userEntity = userRepository.findById(userId);
             if (!userEntity.isPresent()){
                 return ResponseEntity.ok().body(new Response("wrong username", null));
